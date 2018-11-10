@@ -50,7 +50,7 @@ func readConfiguration() (configuration) {
 func CollectDataToSend(w http.ResponseWriter, r *http.Request, urlParams []string, config *configuration) {
 	originName := urlParams[1]
 	originType := urlParams[2]
-	timeout := time.Duration(5 * time.Second)
+	timeout := time.Duration(30 * time.Second)
 	client := http.Client{
 		Timeout: timeout,
 	}
@@ -59,6 +59,7 @@ func CollectDataToSend(w http.ResponseWriter, r *http.Request, urlParams []strin
 	if err != nil {
 		w.WriteHeader(500)
 	} else {
+		r.Body.Close()
 		w.WriteHeader(200)
 	}
 }
