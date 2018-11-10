@@ -57,9 +57,11 @@ func CollectDataToSend(w http.ResponseWriter, r *http.Request, urlParams []strin
 	postingUrl := config.ElasticsearchURL + "/" + originName + "/" + originType
 	_, err := client.Post(postingUrl, "application/json" , r.Body)
 	if err != nil {
+		fmt.Printf("Failed : Name <%s> | type <%s>", originName, originType)
 		w.WriteHeader(500)
 	} else {
 		r.Body.Close()
+		fmt.Printf("Succeeded : Name <%s> | type <%s>", originName, originType)
 		w.WriteHeader(200)
 	}
 }
