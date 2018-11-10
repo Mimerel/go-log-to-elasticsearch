@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/op/go-logging"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
@@ -10,7 +11,20 @@ import (
 	"time"
 )
 
+var log = logging.MustGetLogger("default")
+
+var format = logging.MustStringFormatter(
+	`%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}`,
+)
+
+
 func main() {
+	backend := logging.NewLogBackend(os.Stderr, "", 0)
+	backendFormatter := logging.NewBackendFormatter(backend, format)
+	backendLeveled := logging.AddModuleLevel(backend)
+	backendLeveled.SetLevel(logging.NOTICE, "")
+	logging.SetBackend(backendLeveled, backendFormatter)
+
 	config := readConfiguration()
 	Port := config.Port
 	http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
@@ -57,11 +71,11 @@ func CollectDataToSend(w http.ResponseWriter, r *http.Request, urlParams []strin
 	postingUrl := config.ElasticsearchURL + "/" + originName + "/" + originType
 	_, err := client.Post(postingUrl, "application/json" , r.Body)
 	if err != nil {
-		fmt.Printf("Failed : Name <%s> | type <%s>", originName, originType)
+		log.Errorf("Failed : Name <%s> | type <%s> \n", originName, originType)
 		w.WriteHeader(500)
 	} else {
 		r.Body.Close()
-		fmt.Printf("Succeeded : Name <%s> | type <%s>", originName, originType)
+		log.Noticef("Succeeded : Name <%s> | type <%s> \n", originName, originType)
 		w.WriteHeader(200)
 	}
 }
