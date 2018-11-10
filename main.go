@@ -14,7 +14,7 @@ import (
 var log = logging.MustGetLogger("default")
 
 var format = logging.MustStringFormatter(
-	`%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}`,
+	`%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{color:reset} %{message}`,
 )
 
 
@@ -71,11 +71,9 @@ func CollectDataToSend(w http.ResponseWriter, r *http.Request, urlParams []strin
 	postingUrl := config.ElasticsearchURL + "/" + originName + "/" + originType
 	_, err := client.Post(postingUrl, "application/json" , r.Body)
 	if err != nil {
-		log.Errorf("Failed : Name <%s> | type <%s> \n", originName, originType)
 		w.WriteHeader(500)
 	} else {
 		r.Body.Close()
-		log.Noticef("Succeeded : Name <%s> | type <%s> \n", originName, originType)
 		w.WriteHeader(200)
 	}
 }
