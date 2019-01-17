@@ -63,7 +63,13 @@ func readConfiguration() (configuration) {
 
 func CollectDataToSend(w http.ResponseWriter, r *http.Request, urlParams []string, config *configuration) {
 	originName := urlParams[1]
+	if originName == "" {
+		originName = "Error"
+	}
 	originType := urlParams[2]
+	if originType == "" {
+		originType = "Error"
+	}
 	timeout := time.Duration(30 * time.Second)
 	client := http.Client{
 		Timeout: timeout,
